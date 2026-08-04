@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
@@ -24,10 +25,10 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:100',
             'price' => 'required|numeric',
             'description' => 'nullable|string',
-            'stock' => 'required|integer',
+            'stock' => 'required|integer|min:0',
         ]);
 
         $product = Product::create($validated);
@@ -48,14 +49,9 @@ class ProductController extends Controller
         ], Response::HTTP_OK);
     }
 
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'description' => 'nullable|string',
-            'stock' => 'required|integer',
-        ]);
+        $validated = $request->validated();
 
         $product->update($validated);
 
